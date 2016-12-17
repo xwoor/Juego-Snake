@@ -1,13 +1,14 @@
 
 
- /*jslint bitwise:true, es5: true */
+// Elaboro Mario Osorio Torres
+// Marioosorio714@gmail.com
 (function (window, undefined) {
     var KEY_ENTER = 13,
         KEY_LEFT = 37,
         KEY_UP = 38,
         KEY_RIGHT = 39,
         KEY_DOWN = 40,
-        
+
         canvas = null,
         ctx = null,
         lastPress = null,
@@ -19,13 +20,13 @@
         gameScene = null,
         body = [],
         food = null,
-        //var wall = [],
         dir = 0,
         score = 0,
         iBody = new Image(),
         iFood = new Image(),
         aEat = new Audio(),
         aDie = new Audio();
+        var wall = [];
 
     window.requestAnimationFrame = (function () {
         return window.requestAnimationFrame ||
@@ -43,9 +44,9 @@
 
         lastPress = evt.which;
     }, false);
-    
+
     function Rectangle(x, y, width, height) {
- 
+
         this.x = (x === undefined) ? 0 : x;
         this.y = (y === undefined) ? 0 : y;
         this.width = (width === undefined) ? 0 : width;
@@ -54,7 +55,7 @@
 
     Rectangle.prototype = {
         constructor: Rectangle,
-        
+
         intersects: function (rect) {
             if (rect === undefined) {
                 window.console.warn('Parámetros que faltan en intersecciones de funciones');
@@ -65,7 +66,7 @@
                     this.y + this.height > rect.y);
             }
         },
-        
+
         fill: function (ctx) {
             if (ctx === undefined) {
                 window.console.warn('Parámetros que faltan en intersecciones de funciones');
@@ -73,7 +74,7 @@
                 ctx.fillRect(this.x, this.y, this.width, this.height);
             }
         },
-        
+
         drawImage: function (ctx, img) {
             if (img === undefined) {
                 window.console.warn('Parámetros que faltan en intersecciones de funciones');
@@ -116,31 +117,25 @@
     }
 
     function run() {
-        setTimeout(run, 50);
+        setTimeout(run, 70);
         if (scenes.length) {
             scenes[currentScene].act();
         }
     }
 
     function init() {
-        // Get canvas and context
+        // Canvas y getContext
         canvas = document.getElementById('canvas');
         ctx = canvas.getContext('2d');
 
-        // Load assets
-        iBody.src = 'CIRCULO.PNG';
+        // Imagenes y sonidos
+        iBody.src = 'cuerpo.PNG';
         iFood.src = 'vg.png';
-        aEat.src = 'assets/chomp.m4a';
-        aDie.src = 'assets/dies.m4a';
+        aEat.src = 'sonidoManzana.mp3';
+        aDie.src = 'muerte.mp3';
 
-        // Create food
-        food = new Rectangle(80, 80, 10, 10);
-
-        // Create walls
-        //wall.push(new Rectangle(50, 50, 10, 10));
-        //wall.push(new Rectangle(50, 100, 10, 10));
-        //wall.push(new Rectangle(100, 50, 10, 10));
-        //wall.push(new Rectangle(100, 100, 10, 10));
+        // Crear Comida
+        food = new Rectangle(80, 80, 22, 22);
 
         // Start game
         run();
@@ -151,79 +146,72 @@
     mainScene = new Scene();
 
     mainScene.paint = function (ctx) {
-        // Clean canvas
+        // Limpiar canvas
         ctx.fillStyle = '#030';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, 750, 400);
 
-        // Draw title
+        // Dibujar Textos
         ctx.fillStyle = '#fff';
         ctx.textAlign = 'center';
-        ctx.fillText('Juego Hecho por Mario', 150, 60);
-        ctx.fillText(' Enter Para Iniciar', 150, 90);
+        ctx.font = 'italic 20pt Calibri';
+        ctx.fillText('Juego Elaborado por Mario',  350, 200);
+        ctx.fillText('Presione Enter Para Iniciar', 350, 250);
     };
 
     mainScene.act = function () {
-        // Load next scene
+        // Cargar siguiente escena
         if (lastPress === KEY_ENTER) {
             loadScene(gameScene);
             lastPress = null;
         }
     };
 
-    // Game Scene
+    // Jugar escena
     gameScene = new Scene();
 
     gameScene.load = function () {
         score = 0;
         dir = 1;
         body.length = 0;
-        body.push(new Rectangle(40, 40, 10, 10));
-        body.push(new Rectangle(0, 0, 10, 10));
-        body.push(new Rectangle(0, 0, 10, 10));
-        food.x = random(canvas.width / 10 - 1) * 10;
-        food.y = random(canvas.height / 10 - 1) * 10;
+        body.push(new Rectangle(40, 40, 20, 20));
+        body.push(new Rectangle(0, 0, 20, 20));
+        body.push(new Rectangle(0, 0, 20, 20));
+        food.x = random(canvas.width / 20 - 1) * 20;
+        food.y = random(canvas.height / 20 - 1) * 20;
         gameover = false;
     };
 
     gameScene.paint = function (ctx) {
         var i = 0,
             l = 0;
-        
-        // Clean canvas
+
+        // Lipiar canvas
         ctx.fillStyle = '#030';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw player
+        // Dibujar Jugador
         ctx.strokeStyle = '#0f0';
         for (i = 0, l = body.length; i < l; i += 1) {
             body[i].drawImage(ctx, iBody);
         }
-        
-        // Draw walls
-        //ctx.fillStyle = '#999';
-        //for (i = 0, l = wall.length; i < l; i += 1) {
-        //    wall[i].fill(ctx);
-        //}
-        
-        // Draw food
+
+        // Dibujar Comida
         ctx.strokeStyle = '#f00';
         food.drawImage(ctx, iFood);
 
-        // Draw score
+        // Dibujar puntaje
         ctx.fillStyle = '#fff';
         ctx.textAlign = 'left';
-        ctx.fillText('Puntaje: ' + score, 0, 10);
-        
-        // Debug last key pressed
-        //ctx.fillText('Last Press: '+lastPress,0,20);
-        
-        // Draw pause
+        ctx.fillText('Puntaje: ' + score, 0, 30);
+
+
+        // Dibujar pause
         if (pause) {
             ctx.textAlign = 'center';
             if (gameover) {
-                ctx.fillText('Juego Terninado Iniciar Juego', 150, 75);
+                ctx.fillText('Juego Terninado Iniciar Juego', 350, 200);
             } else {
-                ctx.fillText('PAUSE', 150, 75);
+                ctx.fillText('PAUSADO', 350, 200);
             }
         }
     };
@@ -231,20 +219,20 @@
     gameScene.act = function () {
         var i = 0,
             l = 0;
-        
+
         if (!pause) {
-            // GameOver Reset
+            // GameOver Reiniciar
             if (gameover) {
                 loadScene(mainScene);
             }
 
-            // Move Body
+            // Mover cuerpo
             for (i = body.length - 1; i > 0; i -= 1) {
                 body[i].x = body[i - 1].x;
                 body[i].y = body[i - 1].y;
             }
 
-            // Change Direction
+            // Cambar Direccion
             if (lastPress === KEY_UP && dir !== 2) {
                 dir = 0;
             }
@@ -258,18 +246,18 @@
                 dir = 3;
             }
 
-            // Move Head
+            // Mover Caveza
             if (dir === 0) {
-                body[0].y -= 10;
+                body[0].y -= 20;
             }
             if (dir === 1) {
-                body[0].x += 10;
+                body[0].x += 20;
             }
             if (dir === 2) {
-                body[0].y += 10;
+                body[0].y += 20;
             }
             if (dir === 3) {
-                body[0].x -= 10;
+                body[0].x -= 20;
             }
 
             // Out Screen
@@ -286,29 +274,16 @@
                 body[0].y = canvas.height - body[0].height;
             }
 
-            // Food Intersects
+            // Comida Intersects
             if (body[0].intersects(food)) {
-                body.push(new Rectangle(0, 0, 10, 10));
+                body.push(new Rectangle(0, 0, 20, 20));
                 score += 1;
-                food.x = random(canvas.width / 10 - 1) * 10;
-                food.y = random(canvas.height / 10 - 1) * 10;
+                food.x = random(canvas.width / 20 - 1) * 20;
+                food.y = random(canvas.height / 20 - 1) * 20;
                 aEat.play();
             }
 
-            // Wall Intersects
-            //for (i = 0, l = wall.length; i < l; i += 1) {
-            //    if (food.intersects(wall[i])) {
-            //        food.x = random(canvas.width / 10 - 1) * 10;
-            //        food.y = random(canvas.height / 10 - 1) * 10;
-            //    }
-            //
-            //    if (body[0].intersects(wall[i])) {
-            //        gameover = true;
-            //        pause = true;
-            //    }
-            //}
-
-            // Body Intersects
+            // Cuerpo Intersects
             for (i = 2, l = body.length; i < l; i += 1) {
                 if (body[0].intersects(body[i])) {
                     gameover = true;
@@ -316,13 +291,14 @@
                     aDie.play();
                 }
             }
+
         }
-        // Pause/Unpause
+        // Pause/Des Pause
         if (lastPress === KEY_ENTER) {
             pause = !pause;
             lastPress = null;
         }
     };
-    
+
     window.addEventListener('load', init, false);
 }(window));
